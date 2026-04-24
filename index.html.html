@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiche de Relevé Terrain — Hirondelle de Fenêtre 2026</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #d0d0d0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #000;
+  }
+  .page {
+    background: #fff;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 20px auto;
+    padding: 14mm 14mm 10mm 14mm;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+
+  /* HEADER */
+  .doc-header { border: 2px solid #000; margin-bottom: 6px; }
+  .doc-title-row {
+    background: #1a1a1a; color: #fff;
+    padding: 7px 12px 5px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .doc-title { font-size: 14px; font-weight: bold; letter-spacing: 0.5px; }
+  .doc-subtitle { font-size: 10px; opacity: 0.8; font-style: italic; }
+  .doc-meta-row { display: flex; border-top: 1px solid #555; }
+  .doc-meta-cell { padding: 4px 10px; font-size: 10px; flex: 1; }
+  .doc-meta-cell:not(:last-child) { border-right: 1px solid #ccc; }
+  .doc-meta-cell strong { display: block; font-size: 9px; text-transform: uppercase; color: #555; }
+
+  /* SITE INFO */
+  .site-section { border: 1.5px solid #000; margin-bottom: 6px; }
+  .site-section-header {
+    background: #444; color: #fff;
+    padding: 3px 10px; font-size: 9.5px; font-weight: bold;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .site-row { display: flex; border-top: 1px solid #bbb; }
+  .site-cell { flex: 1; padding: 4px 10px 5px; display: flex; align-items: baseline; gap: 6px; }
+  .site-cell:not(:last-child) { border-right: 1px solid #bbb; }
+  .site-cell label { font-size: 9.5px; white-space: nowrap; font-weight: bold; color: #222; }
+  .site-cell input[type="text"] {
+    border: none; border-bottom: 1px solid #888; outline: none;
+    font-size: 10.5px; font-family: Arial, sans-serif;
+    flex: 1; min-width: 0; padding: 1px 2px; background: transparent;
+  }
+
+  /* GENERIC SECTION */
+  .form-section { border: 1.5px solid #000; margin-bottom: 6px; }
+  .section-header-bar {
+    background: #1a1a1a; color: #fff;
+    padding: 4px 10px; font-size: 10px; font-weight: bold;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    display: flex; gap: 8px; align-items: center;
+  }
+  .section-letter-badge {
+    background: rgba(255,255,255,0.25); font-weight: bold;
+    padding: 0px 5px; font-size: 11px;
+  }
+
+  /* SECTION A */
+  .obs-header-row {
+    display: grid; grid-template-columns: 2fr 1.2fr 1.1fr 1.5fr;
+    border-bottom: 1px solid #000;
+  }
+  .obs-col-head {
+    padding: 3px 8px; font-size: 9px; font-weight: bold;
+    text-align: center; background: #f0f0f0;
+    border-right: 1px solid #aaa; line-height: 1.3;
+  }
+  .obs-col-head:last-child { border-right: none; }
+  .obs-col-head span { display: block; font-weight: normal; font-style: italic; color: #666; font-size: 8.5px; }
+  .obs-data-row {
+    display: grid; grid-template-columns: 2fr 1.2fr 1.1fr 1.5fr;
+    border-bottom: 1px solid #ddd; min-height: 30px;
+  }
+  .obs-cell { padding: 4px 8px; border-right: 1px solid #aaa; display: flex; align-items: center; }
+  .obs-cell:last-child { border-right: none; }
+  .obs-cell input[type="text"],
+  .obs-cell input[type="date"],
+  .obs-cell input[type="time"],
+  .obs-cell select {
+    width: 100%; border: none; border-bottom: 1px solid #999;
+    outline: none; font-size: 10.5px; font-family: Arial, sans-serif;
+    background: transparent; padding: 1px 2px;
+  }
+  .gps-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 10px; border-bottom: 1px solid #ddd;
+    min-height: 28px; flex-wrap: wrap;
+  }
+  .gps-row label { font-size: 9.5px; font-weight: bold; white-space: nowrap; }
+  .gps-row .hint { font-size: 8.5px; color: #777; font-style: italic; white-space: nowrap; }
+  .gps-row input {
+    flex: 1; min-width: 180px; border: none;
+    border-bottom: 1px solid #999; outline: none;
+    font-size: 10.5px; font-family: Arial, sans-serif; background: transparent;
+  }
+
+  /* SECTION B */
+  .count-header-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    border-bottom: 1px solid #000;
+  }
+  .count-col-head {
+    padding: 4px 10px; font-size: 9.5px; font-weight: bold;
+    background: #f0f0f0; border-right: 1px solid #aaa;
+    line-height: 1.4; text-align: center;
+  }
+  .count-col-head:last-child { border-right: none; }
+  .count-col-head span { display: block; font-weight: normal; font-style: italic; font-size: 8.5px; color: #555; margin-top: 2px; }
+  .count-data-row { display: grid; grid-template-columns: 1fr 1fr 1fr; min-height: 36px; }
+  .count-cell { padding: 6px 10px; border-right: 1px solid #aaa; text-align: center; }
+  .count-cell:last-child { border-right: none; }
+  .count-cell input {
+    width: 80px; border: none; border-bottom: 1.5px solid #555;
+    outline: none; font-size: 14px; font-family: Arial, sans-serif;
+    text-align: center; background: transparent; font-weight: bold;
+  }
+
+  /* SECTION C */
+  .crit-header-row {
+    display: grid; grid-template-columns: 130px 210px 1fr;
+    background: #f0f0f0; border-bottom: 1px solid #000;
+  }
+  .crit-col-head {
+    padding: 3px 8px; font-size: 9px; font-weight: bold;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    border-right: 1px solid #aaa;
+  }
+  .crit-col-head:last-child { border-right: none; }
+  .crit-row {
+    display: grid; grid-template-columns: 130px 210px 1fr;
+    border-bottom: 1px solid #ddd; min-height: 28px;
+  }
+  .crit-row:last-child { border-bottom: none; }
+  .crit-name {
+    padding: 5px 8px; font-size: 9.5px; font-weight: bold;
+    border-right: 1px solid #aaa; display: flex;
+    align-items: center; background: #fafafa; line-height: 1.3;
+  }
+  .crit-desc {
+    padding: 5px 8px; font-size: 9px; color: #444;
+    border-right: 1px solid #aaa; display: flex;
+    align-items: center; font-style: italic; line-height: 1.35;
+  }
+  .crit-value {
+    padding: 5px 8px; font-size: 10px;
+    display: flex; align-items: center; flex-wrap: wrap;
+  }
+
+  /* CHECKBOXES / RADIOS */
+  .check-group { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: center; }
+  .check-item { display: flex; align-items: center; gap: 3px; font-size: 10px; cursor: pointer; white-space: nowrap; }
+  .check-item input[type="checkbox"],
+  .check-item input[type="radio"] {
+    appearance: none; -webkit-appearance: none;
+    width: 11px; height: 11px; border: 1.5px solid #333;
+    background: #fff; cursor: pointer; flex-shrink: 0; position: relative;
+  }
+  .check-item input[type="checkbox"]:checked,
+  .check-item input[type="radio"]:checked { background: #1a1a1a; }
+  .check-item input[type="checkbox"]:checked::after,
+  .check-item input[type="radio"]:checked::after {
+    content: '✓'; position: absolute; top: -2px; left: 0px;
+    font-size: 9px; color: white; font-weight: bold;
+  }
+  .inline-text-input {
+    border: none; border-bottom: 1px solid #888; outline: none;
+    font-size: 10px; font-family: Arial, sans-serif;
+    width: 110px; background: transparent; padding: 0 2px;
+  }
+  .crit-value input[type="number"] {
+    border: none; border-bottom: 1px solid #888; outline: none;
+    font-size: 11px; width: 50px; text-align: center;
+    background: transparent; font-family: Arial, sans-serif;
+  }
+
+  /* SECTION D */
+  .obs-libres-body { padding: 6px 10px; min-height: 60px; }
+  .obs-libres-body textarea {
+    width: 100%; border: none; outline: none;
+    font-size: 10.5px; font-family: Arial, sans-serif;
+    resize: vertical; min-height: 54px; background: transparent; line-height: 1.8;
+    background-image: repeating-linear-gradient(transparent, transparent 21px, #ddd 21px, #ddd 22px);
+  }
+
+  /* CONSEILS */
+  .conseils-section { border: 1.5px solid #000; margin-bottom: 8px; }
+  .conseils-header {
+    background: #444; color: #fff; padding: 3px 10px;
+    font-size: 9.5px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .conseils-body { padding: 6px 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 20px; }
+  .conseil-item { font-size: 9.5px; line-height: 1.6; display: flex; gap: 5px; }
+  .conseil-item::before { content: '■'; font-size: 7px; margin-top: 3px; flex-shrink: 0; }
+  .conseil-item strong { font-weight: bold; }
+
+  /* FOOTER */
+  .doc-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 8px; font-size: 8.5px; color: #555;
+    border-top: 1px solid #ccc; padding-top: 5px;
+  }
+
+  /* SUBMIT */
+  .submit-row { text-align: center; margin: 10px 0; }
+  .btn-submit {
+    background: #1a1a1a; color: #fff; border: none;
+    padding: 9px 40px; font-family: Arial, sans-serif;
+    font-size: 11px; font-weight: bold; letter-spacing: 1px;
+    text-transform: uppercase; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-submit:hover { background: #333; }
+  .btn-submit:disabled { background: #888; cursor: default; }
+  #success-msg {
+    display: none; margin-top: 10px; border: 1.5px solid #000;
+    padding: 10px; background: #f5f5f5;
+    text-align: center; font-size: 11px; font-weight: bold;
+  }
+
+  /* SETUP NOTE */
+  .setup-note {
+    background: #f5f5f5; border: 1px dashed #888;
+    padding: 10px 14px; margin-bottom: 10px;
+    font-size: 10px; color: #333; line-height: 1.7;
+  }
+  .setup-note strong { color: #000; }
+  .setup-note ol { padding-left: 16px; margin-top: 4px; }
+  .setup-note a { color: #000; font-weight: bold; }
+
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; }
+    .btn-submit, .setup-note { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+
+
+  <form id="mainForm" action="https://formspree.io/f/xaqaagrj" method="POST">
+
+  <!-- EN-TÊTE -->
+  <div class="doc-header">
+    <div class="doc-title-row">
+      <span class="doc-title">FICHE DE RELEVÉ TERRAIN — HIRONDELLE DE FENÊTRE</span>
+      <span class="doc-subtitle">Delichon urbicum · Suivi colonies 2026</span>
+    </div>
+    <div class="doc-meta-row">
+      <div class="doc-meta-cell">
+        <strong>Protocole</strong>
+        Comptage colonies naturelles (nids sous toits, corniches, balcons)
+      </div>
+      <div class="doc-meta-cell">
+        <strong>Espèce cible</strong>
+        Hirondelle de fenêtre (<em>Delichon urbicum</em>)
+      </div>
+    </div>
+  </div>
+
+  <!-- INFORMATIONS DU SITE -->
+  <div class="site-section">
+    <div class="site-section-header">Informations du site (pré-remplies)</div>
+    <div class="site-row">
+      <div class="site-cell">
+        <label for="ville">Ville / Commune</label>
+        <input type="text" id="ville" name="ville" placeholder="__________________________________________">
+      </div>
+      <div class="site-cell">
+        <label for="secteur">Secteur / Rue</label>
+        <input type="text" id="secteur" name="secteur" placeholder="__________________________________________">
+      </div>
+    </div>
+  </div>
+
+  <!-- A. CONDITIONS D'OBSERVATION -->
+  <div class="form-section">
+    <div class="section-header-bar">
+      <span class="section-letter-badge">A</span>
+      CONDITIONS D'OBSERVATION
+    </div>
+    <div class="obs-header-row">
+      <div class="obs-col-head">Observateur (Prénom NOM)<span>Ex. : Marie DUPONT</span></div>
+      <div class="obs-col-head">Date (JJ/MM/AAAA)<span>Ex. : 15/05/2026</span></div>
+      <div class="obs-col-head">Heure début (HH:MM)<span>Ex. : 09:30</span></div>
+      <div class="obs-col-head">Météo<span>Soleil / Nuageux / Pluie / Vent / Brume</span></div>
+    </div>
+    <div class="obs-data-row">
+      <div class="obs-cell"><input type="text" name="observateur" placeholder="Prénom NOM" required></div>
+      <div class="obs-cell"><input type="date" name="date" required></div>
+      <div class="obs-cell"><input type="time" name="heure_debut"></div>
+      <div class="obs-cell">
+        <select name="meteo" style="width:100%;border:none;border-bottom:1px solid #999;outline:none;font-size:10.5px;font-family:Arial,sans-serif;background:transparent;padding:1px 2px;">
+          <option value="">— choisir —</option>
+          <option>Soleil</option>
+          <option>Légèrement nuageux</option>
+          <option>Nuageux</option>
+          <option>Vent modéré</option>
+          <option>Brume matinale</option>
+          <option>Pluie légère</option>
+        </select>
+      </div>
+    </div>
+    <div class="gps-row">
+      <label>Position GPS ou adresse exacte du bâtiment</label>
+      <span class="hint">Ex. : 12 avenue de Verdun, 69330 Meyzieu &nbsp;|&nbsp; ou 45.7676, 5.0123</span>
+      <input type="text" name="position_gps" required>
+    </div>
+  </div>
+
+  <!-- B. COMPTAGE -->
+  <div class="form-section">
+    <div class="section-header-bar">
+      <span class="section-letter-badge">B</span>
+      COMPTAGE DES NIDS ET INDIVIDUS
+    </div>
+    <div class="count-header-row">
+      <div class="count-col-head">Nids OCCUPÉS<span>Nids avec oiseaux entrant/sortant ou avec présence visible</span></div>
+      <div class="count-col-head">Nids INOCCUPÉS<span>Nids vides, abandonnés ou endommagés</span></div>
+      <div class="count-col-head">Individus observés<span>Total hirondelles vues/entendues (estimation ~XX si trop nombreuses)</span></div>
+    </div>
+    <div class="count-data-row">
+      <div class="count-cell"><input type="number" name="nids_occupes" min="0" placeholder="______"></div>
+      <div class="count-cell"><input type="number" name="nids_inoccupes" min="0" placeholder="______"></div>
+      <div class="count-cell"><input type="text" name="individus_observes" placeholder="______"></div>
+    </div>
+  </div>
+
+  <!-- C. CARACTÉRISTIQUES DU SITE -->
+  <div class="form-section">
+    <div class="section-header-bar">
+      <span class="section-letter-badge">C</span>
+      CARACTÉRISTIQUES DU SITE (à observer sur place)
+    </div>
+    <div class="crit-header-row">
+      <div class="crit-col-head">Critère</div>
+      <div class="crit-col-head">Description</div>
+      <div class="crit-col-head">Valeur / Choix</div>
+    </div>
+
+    <!-- TYPE DE NID (NOUVEAU) -->
+    <div class="crit-row">
+      <div class="crit-name">Type de nid</div>
+      <div class="crit-desc">Nature du nid observé — construit par l'oiseau ou installé par l'homme</div>
+      <div class="crit-value">
+        <div class="check-group">
+          <label class="check-item"><input type="radio" name="type_nid" value="Naturel"> Nid naturel (boue)</label>
+          <label class="check-item"><input type="radio" name="type_nid" value="Artificiel"> Nid artificiel (nichoir)</label>
+          <label class="check-item"><input type="radio" name="type_nid" value="Mixte"> Mixte (les deux)</label>
+          <label class="check-item"><input type="radio" name="type_nid" value="Indéterminé"> Indéterminé</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="crit-row">
+      <div class="crit-name">Hauteur du nid</div>
+      <div class="crit-desc">Hauteur estimée du nid par rapport au sol (en mètres)</div>
+      <div class="crit-value">
+        <input type="number" name="hauteur_nid" step="0.5" min="0" placeholder="___"> &nbsp;m
+      </div>
+    </div>
+
+    <div class="crit-row" style="min-height:34px;">
+      <div class="crit-name">Position du nid</div>
+      <div class="crit-desc">Emplacement sur le bâtiment</div>
+      <div class="crit-value">
+        <div class="check-group">
+          <label class="check-item"><input type="radio" name="position_nid" value="Sous une corniche"> Sous une corniche</label>
+          <label class="check-item"><input type="radio" name="position_nid" value="Sous un balcon"> Sous un balcon</label>
+          <label class="check-item"><input type="radio" name="position_nid" value="Sous un avant-toit"> Sous un avant-toit</label>
+          <label class="check-item"><input type="radio" name="position_nid" value="Sous une fenêtre"> Sous une fenêtre</label>
+          <label class="check-item"><input type="radio" name="position_nid" value="Autre"> Autre :</label>
+          <input type="text" name="position_nid_autre" class="inline-text-input" placeholder="___________">
+        </div>
+      </div>
+    </div>
+
+    <div class="crit-row" style="min-height:34px;">
+      <div class="crit-name">Orientation (façade)</div>
+      <div class="crit-desc">Direction à laquelle fait face le mur porteur du nid</div>
+      <div class="crit-value">
+        <div class="check-group">
+          <label class="check-item"><input type="radio" name="orientation" value="Nord"> Nord</label>
+          <label class="check-item"><input type="radio" name="orientation" value="Sud"> Sud</label>
+          <label class="check-item"><input type="radio" name="orientation" value="Est"> Est</label>
+          <label class="check-item"><input type="radio" name="orientation" value="Ouest"> Ouest</label>
+          <label class="check-item"><input type="radio" name="orientation" value="NE"> NE</label>
+          <label class="check-item"><input type="radio" name="orientation" value="NO"> NO</label>
+          <label class="check-item"><input type="radio" name="orientation" value="SE"> SE</label>
+          <label class="check-item"><input type="radio" name="orientation" value="SO"> SO</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="crit-row" style="min-height:34px;">
+      <div class="crit-name">Type de bâtiment</div>
+      <div class="crit-desc">Nature du bâtiment observé</div>
+      <div class="crit-value">
+        <div class="check-group">
+          <label class="check-item"><input type="radio" name="type_batiment" value="Immeuble résidentiel"> Immeuble résidentiel</label>
+          <label class="check-item"><input type="radio" name="type_batiment" value="Maison individuelle"> Maison individuelle</label>
+          <label class="check-item"><input type="radio" name="type_batiment" value="Commerce/bureau"> Commerce/bureau</label>
+          <label class="check-item"><input type="radio" name="type_batiment" value="Équipement public"> Équipement public</label>
+          <label class="check-item"><input type="radio" name="type_batiment" value="Autre"> Autre :</label>
+          <input type="text" name="type_batiment_autre" class="inline-text-input" placeholder="___________">
+        </div>
+      </div>
+    </div>
+
+    <div class="crit-row">
+      <div class="crit-name">Passage humain en dessous</div>
+      <div class="crit-desc">Fréquentation piétonne sous les nids</div>
+      <div class="crit-value">
+        <div class="check-group">
+          <label class="check-item"><input type="radio" name="passage_humain" value="Faible"> Faible</label>
+          <label class="check-item"><input type="radio" name="passage_humain" value="Modéré"> Modéré</label>
+          <label class="check-item"><input type="radio" name="passage_humain" value="Élevé"> Élevé</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="crit-row" style="min-height:34px;">
+      <div class="crit-name">Autres nids sur la façade</div>
+      <div class="crit-desc">Y a-t-il d'autres nids d'hirondelles ou d'autres espèces sur cette façade ?</div>
+      <div class="crit-value">
+        <div class="check-group">
+          <label class="check-item"><input type="radio" name="autres_nids" value="Oui"> Oui — espèce(s) :</label>
+          <input type="text" name="autres_nids_especes" class="inline-text-input" placeholder="___________________">
+          <label class="check-item"><input type="radio" name="autres_nids" value="Non"> Non</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="crit-row">
+      <div class="crit-name">Espaces verts à proximité</div>
+      <div class="crit-desc">Présence d'espaces verts dans un rayon ~200 m</div>
+      <div class="crit-value">
+        <div class="check-group">
+          <label class="check-item"><input type="radio" name="espaces_verts" value="Oui"> Oui (parc, jardin, arbre, haie…)</label>
+          <label class="check-item"><input type="radio" name="espaces_verts" value="Non"> Non</label>
+          <label class="check-item"><input type="radio" name="espaces_verts" value="Incertain"> Incertain</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="crit-row">
+      <div class="crit-name">Couleur de la façade</div>
+      <div class="crit-desc">Teinte dominante du mur portant les nids</div>
+      <div class="crit-value">
+        <div class="check-group">
+          <label class="check-item"><input type="radio" name="couleur_facade" value="Blanc/Beige"> Blanc / Beige</label>
+          <label class="check-item"><input type="radio" name="couleur_facade" value="Gris"> Gris</label>
+          <label class="check-item"><input type="radio" name="couleur_facade" value="Brun/Ocre"> Brun / Ocre</label>
+          <label class="check-item"><input type="radio" name="couleur_facade" value="Autre"> Autre :</label>
+          <input type="text" name="couleur_facade_autre" class="inline-text-input" placeholder="_______">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- D. OBSERVATIONS LIBRES -->
+  <div class="form-section">
+    <div class="section-header-bar">
+      <span class="section-letter-badge">D</span>
+      OBSERVATIONS LIBRES
+    </div>
+    <div class="obs-libres-body">
+      <textarea name="observations_libres" rows="4"
+        placeholder="Comportements particuliers, présence de prédateurs, travaux sur le bâtiment, nids dégradés, doutes, remarques générales…"></textarea>
+    </div>
+  </div>
+
+  <!-- CONSEILS PRATIQUES -->
+  <div class="conseils-section">
+    <div class="conseils-header">■ CONSEILS PRATIQUES</div>
+    <div class="conseils-body">
+      <div class="conseil-item"><strong>Durée</strong>&nbsp;&nbsp;Minimum 20 min par site pour une observation fiable.</div>
+      <div class="conseil-item"><strong>Estimation</strong>&nbsp;&nbsp;Si trop d'individus : notez ~XX (tilde = estimation).</div>
+      <div class="conseil-item"><strong>Météo idéale</strong>&nbsp;&nbsp;Soleil ou légèrement nuageux, sans pluie ni vent fort.</div>
+      <div class="conseil-item"><strong>Doute</strong>&nbsp;&nbsp;Laissez vide plutôt qu'une valeur incertaine ; utilisez la zone Observations.</div>
+      <div class="conseil-item"><strong>Créneaux</strong>&nbsp;&nbsp;8h–11h et 17h–20h : activité maximale des hirondelles.</div>
+      <div class="conseil-item"><strong>Saisie</strong>&nbsp;&nbsp;Sur tablette/téléphone ou papier + saisie le soir. Ne pas modifier la structure.</div>
+    </div>
+  </div>
+
+  <!-- BOUTON ENVOI -->
+  <div class="submit-row">
+    <button type="submit" class="btn-submit">Envoyer la fiche au coordinateur</button>
+    <div id="success-msg">
+      ✔ Fiche envoyée avec succès !<br>
+      <span style="font-weight:normal;font-size:10px;">Merci pour votre contribution au suivi avifaune 2026.</span>
+    </div>
+  </div>
+
+  <!-- PIED DE PAGE -->
+  <div class="doc-footer">
+    <span>Suivi Avifaune Urbaine 2026</span>
+    <span>Merci pour votre contribution ! ■ Chaque observation compte.</span>
+    <span>Fiche à retourner au coordinateur</span>
+  </div>
+
+  </form>
+</div>
+
+<script>
+  document.getElementById('mainForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('.btn-submit');
+    btn.textContent = 'Envoi en cours…';
+    btn.disabled = true;
+    try {
+      const res = await fetch(this.action, {
+        method: 'POST',
+        body: new FormData(this),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        document.getElementById('success-msg').style.display = 'block';
+        this.reset();
+        btn.textContent = '✔ Fiche envoyée';
+      } else {
+        alert('Erreur lors de l\'envoi. Vérifiez que l\'ID Formspree est bien configuré.');
+        btn.textContent = 'Envoyer la fiche au coordinateur';
+        btn.disabled = false;
+      }
+    } catch(err) {
+      alert('Erreur réseau.');
+      btn.textContent = 'Envoyer la fiche au coordinateur';
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
