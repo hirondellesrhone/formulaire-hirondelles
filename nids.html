@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nids HIrondelles">
+<meta name="theme-color" content="#1c1c1a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Nids Hirondelle de fenêtre</title>
+<style>
+  :root {
+    --noir: #1c1c1a;
+    --gris-fonce: #4a4a46;
+    --gris-mid: #8a8a84;
+    --gris-clair: #d8d6d0;
+    --fond: #f4f3f0;
+    --blanc: #ffffff;
+    --rayon: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { font-size: 16px; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    background: var(--fond); color: var(--noir); min-height: 100vh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .header {
+    background: var(--blanc);
+    border-bottom: 1px solid var(--gris-clair);
+    padding: 1rem 1.25rem 0.9rem;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header h1 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  .header p { font-size: 12px; color: var(--gris-mid); margin-top: 2px; font-style: italic; }
+  .etape-ind { font-size: 11px; color: var(--gris-mid); margin-top: 8px; }
+
+  .step { display: none; padding: 1rem 1rem 5.5rem; }
+  .step.visible { display: block; }
+
+  .section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--gris-mid);
+    margin: 1.25rem 0 0.6rem; padding-left: 2px;
+  }
+
+  .card { background: var(--blanc); border-radius: var(--rayon); border: 1px solid var(--gris-clair); overflow: hidden; margin-bottom: 0.5rem; }
+
+  .field { padding: 0 1rem; border-bottom: 1px solid var(--gris-clair); }
+  .field:last-child { border-bottom: none; }
+  .field label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gris-mid); padding-top: 11px; }
+  .field input, .field textarea {
+    display: block; width: 100%; padding: 6px 0 11px;
+    font-size: 15px; border: none; background: transparent;
+    color: var(--noir); font-family: inherit;
+    -webkit-appearance: none;
+  }
+  .field input:focus, .field textarea:focus { outline: none; }
+  .field textarea { resize: none; min-height: 72px; }
+
+  .legende { background: var(--blanc); border-radius: var(--rayon); border: 1px solid var(--gris-clair); overflow: hidden; margin-bottom: 0.75rem; }
+  .leg-row { display: flex; align-items: center; gap: 10px; padding: 9px 1rem; border-bottom: 1px solid var(--gris-clair); }
+  .leg-row:last-child { border-bottom: none; }
+  .leg-code { font-size: 11px; font-weight: 700; min-width: 36px; color: var(--gris-fonce); }
+  .leg-txt { font-size: 13px; color: var(--gris-fonce); }
+
+  .nids-grid { display: flex; flex-direction: column; gap: 0; background: var(--blanc); border-radius: var(--rayon); border: 1px solid var(--gris-clair); overflow: hidden; }
+  .nid-row { display: flex; align-items: center; gap: 0; padding: 8px 1rem; border-bottom: 1px solid var(--gris-clair); }
+  .nid-row:last-child { border-bottom: none; }
+  .nid-num { font-size: 12px; color: var(--gris-mid); min-width: 30px; font-variant-numeric: tabular-nums; }
+  .nid-btns { display: flex; gap: 5px; flex: 1; }
+  .sbtn {
+    font-size: 12px; font-weight: 500; padding: 5px 9px;
+    border: 1px solid var(--gris-clair); border-radius: 4px;
+    background: transparent; color: var(--gris-mid);
+    cursor: pointer; letter-spacing: 0.02em;
+  }
+  .sbtn.sel { background: var(--noir); border-color: var(--noir); color: var(--blanc); }
+
+  .nav-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--blanc); padding: 0.75rem 1rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--gris-clair);
+    display: flex; gap: 8px;
+  }
+  .btn-back {
+    padding: 13px 18px; border: 1px solid var(--gris-clair); border-radius: var(--rayon);
+    background: transparent; color: var(--gris-fonce); font-size: 14px;
+    font-family: inherit; cursor: pointer;
+  }
+  .btn-next {
+    flex: 1; padding: 13px; border: none; border-radius: var(--rayon);
+    background: var(--noir); color: var(--blanc); font-size: 14px; font-weight: 600;
+    font-family: inherit; cursor: pointer;
+  }
+  .btn-send {
+    flex: 1; padding: 13px; border: none; border-radius: var(--rayon);
+    background: var(--noir); color: var(--blanc); font-size: 14px; font-weight: 600;
+    font-family: inherit; cursor: pointer;
+  }
+
+  .recap-row { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 1rem; border-bottom: 1px solid var(--gris-clair); }
+  .recap-row:last-child { border-bottom: none; }
+  .recap-lbl { font-size: 13px; color: var(--gris-mid); }
+  .recap-val { font-size: 13px; font-weight: 500; max-width: 60%; text-align: right; }
+
+  .bilan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; background: var(--blanc); border-radius: var(--rayon); border: 1px solid var(--gris-clair); overflow: hidden; margin-bottom: 0.5rem; }
+  .bilan-cell { padding: 14px 1rem; border-right: 1px solid var(--gris-clair); border-bottom: 1px solid var(--gris-clair); }
+  .bilan-cell:nth-child(2n) { border-right: none; }
+  .bilan-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .bilan-num { font-size: 26px; font-weight: 700; color: var(--noir); line-height: 1; }
+  .bilan-lbl { font-size: 11px; color: var(--gris-mid); margin-top: 3px; }
+
+  .nids-detail { background: var(--blanc); border-radius: var(--rayon); border: 1px solid var(--gris-clair); padding: 0.75rem 1rem; display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip { font-size: 11px; font-weight: 500; padding: 4px 9px; border-radius: 3px; background: var(--fond); border: 1px solid var(--gris-clair); color: var(--gris-fonce); }
+  .chip.sel { background: var(--noir); border-color: var(--noir); color: var(--blanc); }
+
+  .info-envoi { background: var(--blanc); border: 1px solid var(--gris-clair); border-radius: var(--rayon); padding: 0.75rem 1rem; font-size: 12px; color: var(--gris-mid); line-height: 1.5; margin-bottom: 0.5rem; }
+
+  .success { text-align: center; padding: 3rem 1.5rem; }
+  .success h2 { font-size: 18px; font-weight: 600; margin-bottom: 0.5rem; }
+  .success p { font-size: 14px; color: var(--gris-mid); line-height: 1.6; }
+  .btn-new { margin-top: 2rem; display: inline-block; padding: 13px 28px; border: 1px solid var(--gris-clair); border-radius: var(--rayon); background: transparent; color: var(--gris-fonce); font-size: 14px; font-family: inherit; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>État des nids — Delichon urbicum</h1>
+  <p>Hirondelle de fenêtre</p>
+  <div class="etape-ind" id="etape-ind">Étape 1 sur 3</div>
+</div>
+
+<!-- ÉTAPE 1 : INFOS -->
+<div class="step visible" id="step0">
+  <div class="section-label">Site et visite</div>
+  <div class="card">
+    <div class="field">
+      <label>Commune</label>
+      <input type="text" id="commune" placeholder="Ex : Lyon" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Adresse / Site</label>
+      <input type="text" id="adresse" placeholder="Ex : 12 rue des Lilas">
+    </div>
+    <div class="field">
+      <label>Date d'observation</label>
+      <input type="date" id="date_obs">
+    </div>
+    <div class="field">
+      <label>Observateur·rice</label>
+      <input type="text" id="obs" placeholder="Prénom NOM">
+    </div>
+  </div>
+  <div class="nav-bar">
+    <button class="btn-next" onclick="goStep1()">Saisir les nids</button>
+  </div>
+</div>
+
+<!-- ÉTAPE 2 : NIDS -->
+<div class="step" id="step1">
+  <div class="section-label">Légende</div>
+  <div class="legende">
+    <div class="leg-row"><span class="leg-code">PP</span><span class="leg-txt">Couple reproducteur présent</span></div>
+    <div class="leg-row"><span class="leg-code">GP</span><span class="leg-txt">Nid en bon état, non occupé</span></div>
+    <div class="leg-row"><span class="leg-code">CNA</span><span class="leg-txt">Nid en construction</span></div>
+    <div class="leg-row"><span class="leg-code">X</span><span class="leg-txt">Nid détruit ou absent</span></div>
+    <div class="leg-row"><span class="leg-code">MP</span><span class="leg-txt">Nourrissage, jeunes présents</span></div>
+  </div>
+  <div class="section-label">Nids 1 à 20</div>
+  <div class="nids-grid" id="nids-grid"></div>
+  <div class="nav-bar">
+    <button class="btn-back" onclick="showStep(0)">Retour</button>
+    <button class="btn-next" onclick="goStep2()">Récapitulatif</button>
+  </div>
+</div>
+
+<!-- ÉTAPE 3 : RÉCAP & ENVOI -->
+<div class="step" id="step2">
+  <div class="section-label">Informations</div>
+  <div class="card" id="recap-infos"></div>
+
+  <div class="section-label">Bilan</div>
+  <div class="bilan-grid" id="bilan-grid"></div>
+
+  <div class="section-label">Nids renseignés</div>
+  <div class="nids-detail" id="nids-chips"></div>
+
+  <div class="section-label">Remarques</div>
+  <div class="card">
+    <div class="field" style="border:none">
+      <textarea id="remarques" placeholder="Conditions météo, comportements notables…"></textarea>
+    </div>
+  </div>
+
+  <div class="info-envoi">
+    La fiche sera envoyée à : <strong>hirondellesetmartinets.lpo69@gmail.com</strong>
+  </div>
+
+  <div class="nav-bar">
+    <button class="btn-back" onclick="showStep(1)">Retour</button>
+    <button class="btn-send" onclick="envoyerMail()">Envoyer la fiche</button>
+  </div>
+</div>
+
+<!-- ÉTAPE 4 : CONFIRMATION -->
+<div class="step" id="step3">
+  <div class="success">
+    <h2>Fiche prête à envoyer</h2>
+    <p>Votre messagerie s'est ouverte avec la fiche pré-remplie.<br>Appuyez sur Envoyer dans votre application mail.</p>
+    <button class="btn-new" onclick="reset()">Nouvelle fiche</button>
+  </div>
+</div>
+
+<script>
+const DEST = 'hirondellesetmartinets.lpo69@gmail.com';
+const STATUTS = ['PP','GP','CNA','X','MP'];
+const LABELS = {
+  PP:  'Couple reproducteur présent',
+  GP:  'Nid en bon état, non occupé',
+  CNA: 'Nid en construction',
+  X:   'Nid détruit ou absent',
+  MP:  'Nourrissage, jeunes présents'
+};
+const nids = {};
+for(let i=1;i<=20;i++) nids[i]=null;
+
+document.getElementById('date_obs').value = new Date().toISOString().split('T')[0];
+
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+function showStep(n) {
+  document.querySelectorAll('.step').forEach((s,i) => s.classList.toggle('visible', i===n));
+  const labels = ['Étape 1 sur 3','Étape 2 sur 3','Étape 3 sur 3',''];
+  document.getElementById('etape-ind').textContent = labels[n] || '';
+  window.scrollTo(0,0);
+}
+
+function goStep1() {
+  if(!document.getElementById('commune').value.trim()) { alert('Veuillez renseigner la commune.'); return; }
+  buildGrid();
+  showStep(1);
+}
+
+function buildGrid() {
+  const g = document.getElementById('nids-grid');
+  g.innerHTML = '';
+  for(let i=1;i<=20;i++){
+    const row = document.createElement('div');
+    row.className = 'nid-row';
+    row.id = 'row-'+i;
+    const btns = STATUTS.map(s =>
+      `<button class="sbtn${nids[i]===s?' sel':''}" onclick="sel(${i},'${s}')">${s}</button>`
+    ).join('');
+    row.innerHTML = `<span class="nid-num">${i}</span><div class="nid-btns">${btns}</div>`;
+    g.appendChild(row);
+  }
+}
+
+function sel(n, s) {
+  nids[n] = nids[n]===s ? null : s;
+  document.getElementById('row-'+n).querySelectorAll('.sbtn')
+    .forEach((b,i) => b.className = 'sbtn'+(nids[n]===STATUTS[i]?' sel':''));
+}
+
+function goStep2() {
+  const commune = document.getElementById('commune').value || '—';
+  const adresse = document.getElementById('adresse').value || '—';
+  const dateVal = document.getElementById('date_obs').value;
+  const obs     = document.getElementById('obs').value || '—';
+  const fmt = dateVal
+    ? new Date(dateVal+'T12:00').toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
+    : 'Non renseignée';
+
+  document.getElementById('recap-infos').innerHTML = `
+    <div class="recap-row"><span class="recap-lbl">Commune</span><span class="recap-val">${commune}</span></div>
+    <div class="recap-row"><span class="recap-lbl">Adresse / Site</span><span class="recap-val">${adresse}</span></div>
+    <div class="recap-row"><span class="recap-lbl">Date</span><span class="recap-val">${fmt}</span></div>
+    <div class="recap-row"><span class="recap-lbl">Observateur·rice</span><span class="recap-val">${obs}</span></div>
+  `;
+
+  const cnt = {PP:0,GP:0,CNA:0,X:0,MP:0};
+  for(let i=1;i<=20;i++) if(nids[i]) cnt[nids[i]]++;
+  const total = Object.values(cnt).reduce((a,b)=>a+b,0);
+
+  document.getElementById('bilan-grid').innerHTML = `
+    <div class="bilan-cell"><div class="bilan-num">${total}</div><div class="bilan-lbl">Nids renseignés</div></div>
+    <div class="bilan-cell"><div class="bilan-num">${cnt.PP}</div><div class="bilan-lbl">PP</div></div>
+    <div class="bilan-cell"><div class="bilan-num">${cnt.MP}</div><div class="bilan-lbl">MP</div></div>
+    <div class="bilan-cell"><div class="bilan-num">${cnt.X}</div><div class="bilan-lbl">X</div></div>
+    <div class="bilan-cell"><div class="bilan-num">${cnt.GP}</div><div class="bilan-lbl">GP</div></div>
+    <div class="bilan-cell"><div class="bilan-num">${cnt.CNA}</div><div class="bilan-lbl">CNA</div></div>
+  `;
+
+  const chips = document.getElementById('nids-chips');
+  chips.innerHTML = '';
+  for(let i=1;i<=20;i++){
+    const sp = document.createElement('span');
+    sp.className = 'chip' + (nids[i]?' sel':'');
+    sp.textContent = nids[i] ? `N°${i} ${nids[i]}` : `N°${i}`;
+    chips.appendChild(sp);
+  }
+
+  showStep(2);
+}
+
+function envoyerMail() {
+  const commune = document.getElementById('commune').value || '—';
+  const adresse = document.getElementById('adresse').value || '—';
+  const dateVal = document.getElementById('date_obs').value;
+  const obs     = document.getElementById('obs').value || '—';
+  const rem     = document.getElementById('remarques').value;
+  const fmt = dateVal
+    ? new Date(dateVal+'T12:00').toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
+    : 'Non renseignée';
+
+  const cnt = {PP:0,GP:0,CNA:0,X:0,MP:0};
+  const lignes = [];
+  for(let i=1;i<=20;i++){
+    if(nids[i]) cnt[nids[i]]++;
+    lignes.push(`Nid ${String(i).padStart(2,' ')} : ${nids[i] ? nids[i]+' — '+LABELS[nids[i]] : '(non renseigné)'}`);
+  }
+
+  const corps =
+`FICHE SUIVI DES NIDS — Delichon urbicum
+${'='.repeat(44)}
+
+Commune      : ${commune}
+Adresse      : ${adresse}
+Date         : ${fmt}
+Observateur  : ${obs}
+
+BILAN
+${'─'.repeat(44)}
+PP  Couple reproducteur présent   : ${cnt.PP}
+GP  Nid en bon état, non occupé   : ${cnt.GP}
+CNA Nid en construction           : ${cnt.CNA}
+X   Nid détruit ou absent         : ${cnt.X}
+MP  Nourrissage, jeunes présents  : ${cnt.MP}
+Total nids renseignés             : ${Object.values(cnt).reduce((a,b)=>a+b,0)} / 20
+
+DÉTAIL NID PAR NID
+${'─'.repeat(44)}
+${lignes.join('\n')}
+${rem ? '\nREMARQUES\n'+'─'.repeat(44)+'\n'+rem : ''}
+
+${'─'.repeat(44)}
+Fiche générée le ${new Date().toLocaleDateString('fr-FR')}`;
+
+  const sujet = `Suivi nids Hirondelle de fenêtre — ${commune} — ${fmt}`;
+  window.location.href = `mailto:${DEST}?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
+  setTimeout(() => showStep(3), 600);
+}
+
+function reset() {
+  ['commune','adresse','obs','remarques'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('date_obs').value = new Date().toISOString().split('T')[0];
+  for(let i=1;i<=20;i++) nids[i]=null;
+  showStep(0);
+}
+</script>
+</body>
+</html>
